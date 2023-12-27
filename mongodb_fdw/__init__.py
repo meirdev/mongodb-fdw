@@ -17,7 +17,7 @@ logger.addHandler(file_handler)
 logger.debug("loaded")
 
 
-JSON = dict[str, Any]
+Doc = dict[str, Any]
 
 
 class Options(TypedDict):
@@ -56,7 +56,7 @@ class MongoDB(multicorn.ForeignDataWrapper):
     def rowid_column(self) -> str:
         return "_id"
 
-    def insert(self, doc: JSON) -> JSON:
+    def insert(self, doc: Doc) -> Doc:
         logger.debug("insert: %s", doc)
 
         doc.pop("_id")
@@ -65,7 +65,7 @@ class MongoDB(multicorn.ForeignDataWrapper):
 
         return {"_id": str(doc_id), **doc}
 
-    def update(self, id: int, doc: JSON) -> JSON:
+    def update(self, id: int, doc: Doc) -> Doc:
         logger.debug("update: %s %s", id, doc)
 
         doc.pop("_id")
@@ -77,7 +77,7 @@ class MongoDB(multicorn.ForeignDataWrapper):
 
         self.collection.delete_one({"_id": ObjectId(id)})
 
-    def execute(self, quals: list[multicorn.Qual], columns: list[str]) -> Iterable[JSON]:
+    def execute(self, quals: list[multicorn.Qual], columns: list[str]) -> Iterable[Doc]:
         logger.debug("execute: %s %s", quals, columns)
 
         return self.collection.find()
